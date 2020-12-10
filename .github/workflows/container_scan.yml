@@ -29,10 +29,12 @@ jobs:
         with:
           script: |
             console.log(JSON.stringify(context, null, 2));
+            const sha = context.payload.workflow_run.head_sha;
+            const branch = context.payload.workflow_run.head_branch;
 
             const statuses = await github.repos.getCombinedStatusForRef({
                 ...context.repo,
-                ref: context.sha
+                ref: sha
             }).then(status => {
                 if (status.data.statuses) {
                     return status.data.statuses.filter(status => {
@@ -43,7 +45,7 @@ jobs:
             });
 
             //TODO remove this
-            console.log('----- Combined Statuses');
+            console.log(`----- Combined Statuses for ${branch}:${sha}`);
             console.log(JSON.stringify(statuses, null, 2));
 
             const containers = [];
