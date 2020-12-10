@@ -1,5 +1,5 @@
 class DeploymentPayload {
-    
+
     constructor(context, core, github) {
         this.context = context;
         this.core = core;
@@ -8,23 +8,23 @@ class DeploymentPayload {
 
     // Unpacks the deployment payload and sets them as outputs then reports a deployment status
     async unpackAndStart() {
-        const context = this.context
-            , github = this.github
-            , core = this.core
-            , run = process.env.GITHUB_RUN_ID
-            , log_url = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${run}`
-            ;
+        const context = this.context,
+            github = this.github,
+            core = this.core,
+            run = process.env.GITHUB_RUN_ID,
+            log_url = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${run}`;
 
-        const deployment = context.payload.deployment
-            , environment = deployment.environment
-            , deploymentPayload = JSON.parse(deployment.payload)
-            ;
+        const deployment = context.payload.deployment,
+            environment = deployment.environment,
+            deploymentPayload = JSON.parse(deployment.payload);
 
         core.setOutput('app_container_image', deploymentPayload.app_container.image);
         core.setOutput('app_container_version', deploymentPayload.app_container.version);
+        core.setOutput('app_container_image_collapsed', cleanContainerImageName(deploymentPayload.app_container.image));
 
         core.setOutput('database_container_image', deploymentPayload.database_container.image);
         core.setOutput('database_container_version', deploymentPayload.database_container.version);
+        core.setOutput('database_container_image_collapsed', cleanContainerImageName(deploymentPayload.database_container.image));
 
         core.setOutput('deployment_sha', deploymentPayload.sha);
         core.setOutput('deployment_github_ref', deploymentPayload.ref);
@@ -32,8 +32,9 @@ class DeploymentPayload {
         core.setOutput('environment', environment);
 
         core.setOutput('container_registry', deploymentPayload.container_registry);
-        
-        
+
+
+
         github.repos.createDeploymentStatus({
             ...this.context.repo,
             mediaType: {
@@ -46,6 +47,10 @@ class DeploymentPayload {
             log_url: log_url
         });
     }
+}
+
+function cleanContainerImageName(name) {
+    return name.replace('/', '-');
 }
 
 module.exports = (context, core, github) => {

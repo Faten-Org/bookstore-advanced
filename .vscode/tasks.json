@@ -303,13 +303,13 @@
       "id": "KUBERNETES_CLUSTER_NAME",
       "type": "promptString",
       "description": "The name of the Kubernetes Cluster in GCP Kubernetes Engine to connect to",
-      "default": "bookstore-demos"
+      "default": "bookstore-test"
     },
     {
       "id": "GCP_PROJECT_ID",
       "type": "promptString",
       "description": "The id for GCP project",
-      "default": "octodemo-containers"
+      "default": "octodemo-db-291120"
     },
     {
       "id": "GCP_COMPUTE_ZONE",
