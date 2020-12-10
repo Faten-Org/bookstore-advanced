@@ -47,10 +47,6 @@ jobs:
     needs:
       - deploy_details
 
-    outputs:
-      app_container_image: ${{ steps.push_containers.outputs.app_image }}
-      database_container_image: ${{ steps.push_containers.outputs.db_image }}
-
     env:
       GHCR_APP_IMAGE: ghcr.io/${{ needs.deploy_details.outputs.app_container_image }}:${{ needs.deploy_details.outputs.app_container_version }}
       GCP_APP_IMAGE: eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ needs.deploy_details.outputs.app_container_image_collapsed }}:${{ needs.deploy_details.outputs.app_container_version }}
@@ -91,10 +87,7 @@ jobs:
         id: push_containers
         run: |
           docker push $GCP_APP_IMAGE
-          echo "::set-output name=app_image::$GCP_APP_IMAGE"
-
           docker push $GCP_DB_IMAGE
-          echo "::set-output name=db_image::$GCP_DB_IMAGE"
 
 
   deploy:
@@ -114,10 +107,10 @@ jobs:
       # Point to the GCR registry instead of GitHub Container Registry
       TF_VAR_container_registry: eu.gcr.io
 
-      TF_VAR_app_container: ${{ needs.mirror_containers.outputs.app_container_image }}
+      TF_VAR_app_container: ${{ needs.deploy_details.outputs.app_container_image_collapsed }}
       TF_VAR_app_container_version: ${{ needs.deploy_details.outputs.app_container_version }}
 
-      TF_VAR_database_container: ${{ needs.mirror_containers.outputs.database_container_image }}
+      TF_VAR_database_container: ${{ needs.deploy_details.outputs.database_container_image_collapsed }}
       TF_VAR_database_container_version: ${{ needs.deploy_details.outputs.database_container_version }}
 
       KUBE_SYSTEM: gke
