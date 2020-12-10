@@ -91,10 +91,10 @@ jobs:
         id: push_containers
         run: |
           docker push $GCP_APP_IMAGE
-          echo "::set-output name=app_image::${{ env.GCP_APP_IMAGE }}"
+          echo "::set-output name=app_image::$GCP_APP_IMAGE"
 
           docker push $GCP_DB_IMAGE
-          echo "::set-output name=db_image::${{ env.GCP_DB_IMAGE }}"
+          echo "::set-output name=db_image::$GCP_DB_IMAGE"
 
 
   deploy:
